@@ -1,4 +1,6 @@
-import math
+from stack_fsm import StackFSM
+from game_elements import *
+from mathf import *
 
 from rlbot.agents.base_agent import BaseAgent, SimpleControllerState
 from rlbot.utils.structures.game_data_struct import GameTickPacket
@@ -7,64 +9,49 @@ from rlbot.utils.structures.game_data_struct import GameTickPacket
 class IAmHuman(BaseAgent):
 
     def initialize_agent(self):
-        #This runs once before the bot starts up
+        # This runs once before the bot starts up
         self.controller_state = SimpleControllerState()
+        self.brain = StackFSM()
+        self.me = Car()
+        self.team = []
+        self.opponents = []
+        self.ball = Ball()
 
-    def get_output(self, packet: GameTickPacket) -> SimpleControllerState:
-        ball_location = Vector2(packet.game_ball.physics.location.x, packet.game_ball.physics.location.y)
-
-        my_car = packet.game_cars[self.index]
-        car_location = Vector2(my_car.physics.location.x, my_car.physics.location.y)
-        car_direction = get_car_facing_vector(my_car)
-        car_to_ball = ball_location - car_location
-
-        steer_correction_radians = car_direction.correction_to(car_to_ball)
-
-        if steer_correction_radians > 0:
-            # Positive radians in the unit circle is a turn to the left.
-            turn = -1.0  # Negative value for a turn to the left.
-        else:
-            turn = 1.0
+    def get_output(self, game: GameTickPacket) -> SimpleControllerState:
+        self.preprocess(game)
 
         self.controller_state.throttle = 1.0
-        self.controller_state.steer = turn
+        self.controller_state.steer = 0
+        self.controller_state.boost = True
 
         return self.controller_state
 
+    def preprocess(self, game):
+        # set up own bot object
+        self.me.location.data = [game.game_cars[self.index].physics.location.x,
+                                 game.game_cars[self.index].physics.location.y,
+                                 game.game_cars[self.index].physics.location.z]
+        self.me.rotation.data = [game.game_cars[self.index].physics.rotation.pitch,
+                                 game.game_cars[self.index].physics.rotation.yaw,
+                                 game.game_cars[self.index].physics.rotation.roll]
+        self.me.velocity.data = [game.game_cars[self.index].physics.velocity.x,
+                                 game.game_cars[self.index].physics.velocity.y,
+                                 game.game_cars[self.index].physics.velocity.z]
+        self.me.angular_velocity.data = [game.game_cars[self.index].physics.angular_velocity.x,
+                                         game.game_cars[self.index].physics.angular_velocity.y,
+                                         game.game_cars[self.index].physics.angular_velocity.z]
+        self.me.rotation_matrix = to_rotation_matrix(self.me.rotation.data)
+        self.me.boost = game.game_cars[self.index].boost
 
-class Vector2:
-    def __init__(self, x=0, y=0):
-        self.x = float(x)
-        self.y = float(y)
+        # set up ball object
+        self.ball.location.data = [game.game_ball.physics.location.x, game.game_ball.physics.location.y,
+                                   game.game_ball.physics.location.z]
+        self.ball.rotation.data = [game.game_ball.physics.rotation.pitch, game.game_ball.physics.rotation.yaw,
+                                   game.game_ball.physics.rotation.roll]
+        self.ball.velocity.data = [game.game_ball.physics.velocity.x, game.game_ball.physics.velocity.y,
+                                   game.game_ball.physics.velocity.z]
+        self.ball.angular_velocity.data = [game.game_ball.physics.angular_velocity.x,
+                                           game.game_ball.physics.angular_velocity.y,
+                                           game.game_ball.physics.angular_velocity.z]
 
-    def __add__(self, val):
-        return Vector2(self.x + val.x, self.y + val.y)
-
-    def __sub__(self, val):
-        return Vector2(self.x - val.x, self.y - val.y)
-
-    def correction_to(self, ideal):
-        # The in-game axes are left handed, so use -x
-        current_in_radians = math.atan2(self.y, -self.x)
-        ideal_in_radians = math.atan2(ideal.y, -ideal.x)
-
-        correction = ideal_in_radians - current_in_radians
-
-        # Make sure we go the 'short way'
-        if abs(correction) > math.pi:
-            if correction < 0:
-                correction += 2 * math.pi
-            else:
-                correction -= 2 * math.pi
-
-        return correction
-
-
-def get_car_facing_vector(car):
-    pitch = float(car.physics.rotation.pitch)
-    yaw = float(car.physics.rotation.yaw)
-
-    facing_x = math.cos(pitch) * math.cos(yaw)
-    facing_y = math.cos(pitch) * math.sin(yaw)
-
-    return Vector2(facing_x, facing_y)
+        self.ball.local_location = to_local_coordinates(self.ball.location - self.me.location, self.me.rotation_matrix)
