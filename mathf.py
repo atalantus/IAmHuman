@@ -37,6 +37,18 @@ def sign(x):
         return 1
 
 
+def velocity2D(target_object):
+    return math.sqrt(target_object.velocity.data[0] ** 2 + target_object.velocity.data[1] ** 2)
+
+
+def distance2D(target_object, our_object):
+    if isinstance(target_object, Vector3):
+        difference = target_object - our_object
+    else:
+        difference = target_object.location - our_object.location
+    return math.sqrt(difference.data[0] ** 2 + difference.data[1] ** 2)
+
+
 def to_local_coordinates(vector, transformation_matrix):
     x = vector * transformation_matrix[0]
     y = vector * transformation_matrix[1]
