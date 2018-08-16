@@ -5,6 +5,8 @@ from IAmHuman.game_elements import *
 from IAmHuman.mathf import *
 from IAmHuman.states.atba import ATBA
 from IAmHuman.states.quick_chat import QuickChat
+from IAmHuman.states.quick_shot import QuickShot
+from IAmHuman.states.atba_shooting import ATBAShooting
 
 from rlbot.agents.base_agent import BaseAgent, SimpleControllerState
 from rlbot.utils.structures.game_data_struct import GameTickPacket
@@ -16,7 +18,7 @@ class IAmHuman(BaseAgent):
         # This runs once before the bot starts up
         self.brain = StackFSM()
         self.me = Car()
-        self.team = []
+        self.teammates = []
         self.opponents = []
         self.ball = Ball()
         self.game_info = GameInfo()
@@ -37,7 +39,7 @@ class IAmHuman(BaseAgent):
 
         if self.brain.get_current_state() is None:
             # Prevent bot from doing nothing
-            self.brain.push_only(ATBA())
+            self.brain.push_only(ATBAShooting())
 
         return self.brain.update(self)
 
@@ -85,7 +87,7 @@ class IAmHuman(BaseAgent):
         self.game_info.is_match_ended = game.game_info.is_match_ended
 
         # set up other car objects
-        self.team.clear()
+        self.teammates.clear()
         self.opponents.clear()
 
         for i, car in enumerate(game.game_cars):
@@ -94,7 +96,7 @@ class IAmHuman(BaseAgent):
                 self.preprocess_car(game.game_cars[i], new_car)
 
                 if car.team == self.me.team:
-                    self.team.append(new_car)
+                    self.teammates.append(new_car)
                 else:
                     self.opponents.append(new_car)
 

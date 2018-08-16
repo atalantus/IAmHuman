@@ -8,7 +8,7 @@ from rlbot.utils.structures.quick_chats import QuickChats
 class QuickChat(State):
     def __init__(self):
         self.me_previous_stats = None
-        self.team_previous_stats = []
+        self.teammates_previous_stats = []
         self.opponents_previous_stats = []
         self.gg = False
         self.agent = None
@@ -18,7 +18,7 @@ class QuickChat(State):
 
     def execute(self, agent):
         self.agent = agent
-        team_stats = [c.stats for c in agent.team]
+        team_stats = [c.stats for c in agent.teammates]
         opponents_stats = [c.stats for c in agent.opponents]
 
         if self.me_previous_stats is not None:
@@ -28,7 +28,7 @@ class QuickChat(State):
                     self.goal(QuickChatCause.ME)
 
                     # Check for assist
-                    for cur, last in zip(team_stats, self.team_previous_stats):
+                    for cur, last in zip(team_stats, self.teammates_previous_stats):
                         if cur.assists > last.assists:
                             self.assist(QuickChatCause.TEAM)
                 elif agent.me.stats.own_goals > self.me_previous_stats.own_goals:
@@ -39,7 +39,7 @@ class QuickChat(State):
                     self.demolition(QuickChatCause.ME)
                 else:
                     # Check Team
-                    for cur, last in zip(team_stats, self.team_previous_stats):
+                    for cur, last in zip(team_stats, self.teammates_previous_stats):
                         if cur.goals > last.goals:
                             self.goal(QuickChatCause.TEAM)
                         elif cur.own_goals > last.own_goals:
@@ -68,7 +68,7 @@ class QuickChat(State):
                 self.gg = True
 
         self.me_previous_stats = agent.me.stats.clone()
-        self.team_previous_stats = [s.clone() for s in team_stats]
+        self.teammates_previous_stats = [s.clone() for s in team_stats]
         self.opponents_previous_stats = [s.clone() for s in opponents_stats]
 
     def terminate(self, agent):

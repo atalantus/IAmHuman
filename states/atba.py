@@ -14,9 +14,9 @@ class ATBA(State):
         target_location = agent.ball
         target_speed = velocity2d(agent.ball.velocity) + (distance2d(agent.ball.location, agent.me.location) / 1.5)
 
-        return self.atba_controller(target_location, target_speed, agent)
+        return self.controller(target_location, target_speed, agent)
 
-    def atba_controller(self, target_object, target_speed, agent):
+    def controller(self, target_object, target_speed, agent):
         location = target_object.local_location
         controller_state = SimpleControllerState()
         angle_to_ball = math.atan2(location.data[1], location.data[0])
