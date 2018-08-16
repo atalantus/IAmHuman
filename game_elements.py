@@ -9,6 +9,7 @@ class GameObject(ABC):
         self.rotation = Vector3([0, 0, 0])
         self.velocity = Vector3([0, 0, 0])
         self.angular_velocity = Vector3([0, 0, 0])
+        self.local_location = Vector3([0, 0, 0])
 
 
 class Car(GameObject):
@@ -24,7 +25,6 @@ class Car(GameObject):
         self.name = 'IAmHuman'
         self.team = 0
         self.boost = 0
-        self.local_location = Vector3([0, 0, 0])
 
 
 class ScoreboardStats:
@@ -49,12 +49,10 @@ class ScoreboardStats:
         return ss
 
 
-
 class Ball(GameObject):
     def __init__(self):
         super().__init__()
         self.latest_touch = LatestTouch()
-        self.local_location = Vector3([0, 0, 0])
 
 
 class LatestTouch:

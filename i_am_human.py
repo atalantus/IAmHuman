@@ -81,7 +81,7 @@ class IAmHuman(BaseAgent):
         self.me.stats.shots = game.game_cars[self.index].score_info.shots
         self.me.stats.demolitions = game.game_cars[self.index].score_info.demolitions
 
-        self.me.rotation_matrix = to_rotation_matrix(self.me.rotation.data)
+        self.me.rotation_matrix = calc_rotation_matrix(self.me.rotation.data)
         self.me.boost = game.game_cars[self.index].boost
         self.me.team = game.game_cars[self.index].team
 
@@ -96,7 +96,7 @@ class IAmHuman(BaseAgent):
                                            game.game_ball.physics.angular_velocity.y,
                                            game.game_ball.physics.angular_velocity.z]
 
-        self.ball.local_location = to_local_coordinates(self.ball.location - self.me.location, self.me.rotation_matrix)
+        self.ball.local_location = calc_local_vector(self.ball.location - self.me.location, self.me.rotation_matrix)
 
         # set up game info objects
         self.game_info.is_match_ended = game.game_info.is_match_ended
@@ -126,7 +126,7 @@ class IAmHuman(BaseAgent):
                 new_car.stats.shots = game.game_cars[i].score_info.shots
                 new_car.stats.demolitions = game.game_cars[i].score_info.demolitions
 
-                new_car.rotation_matrix = to_rotation_matrix(self.me.rotation.data)
+                new_car.rotation_matrix = calc_rotation_matrix(self.me.rotation.data)
                 new_car.boost = game.game_cars[i].boost
                 new_car.team = game.game_cars[i].team
 

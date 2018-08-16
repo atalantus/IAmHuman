@@ -12,16 +12,16 @@ class ATBAState(State):
 
     def execute(self, agent):
         target_location = agent.ball
-        target_speed = velocity2D(agent.ball) + (distance2D(agent.ball, agent.me) / 1.5)
+        target_speed = velocity_2d(agent.ball.velocity) + (distance_2d(agent.ball.location, agent.me.location) / 1.5)
 
-        return self.exampleController(target_location, target_speed, agent)
+        return self.atba_controller(target_location, target_speed, agent)
 
-    def exampleController(self, target_object, target_speed, agent):
+    def atba_controller(self, target_object, target_speed, agent):
         location = target_object.local_location
         controller_state = SimpleControllerState()
         angle_to_ball = math.atan2(location.data[1], location.data[0])
 
-        current_speed = velocity2D(agent.me)
+        current_speed = velocity_2d(agent.me.velocity)
         # steering
         if angle_to_ball > 0.1:
             controller_state.steer = controller_state.yaw = 1
@@ -40,7 +40,7 @@ class ATBAState(State):
 
         # dodging
         time_difference = time.time() - agent.start
-        if time_difference > 2.2 and distance2D(target_object.location, agent.me.location) > 1000 and abs(
+        if time_difference > 2.2 and distance_2d(target_object.location, agent.me.location) > 1000 and abs(
                 angle_to_ball) < 1.3:
             agent.start = time.time()
         elif time_difference <= 0.1:
