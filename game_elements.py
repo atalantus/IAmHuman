@@ -1,6 +1,6 @@
 from abc import ABC
 
-from mathf import *
+from IAmHuman.mathf import Vector3
 
 
 class GameObject(ABC):
@@ -25,6 +25,7 @@ class Car(GameObject):
         self.name = 'IAmHuman'
         self.team = 0
         self.boost = 0
+        self.rotation_matrix = Vector3([0, 0, 0])
 
 
 class ScoreboardStats:

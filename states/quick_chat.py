@@ -1,6 +1,6 @@
 from enum import Enum
 
-from stack_fsm import State
+from IAmHuman.stack_fsm import State
 
 from rlbot.utils.structures.quick_chats import QuickChats
 
@@ -27,6 +27,7 @@ class QuickChat(State):
                 if agent.me.stats.goals > self.me_previous_stats.goals:
                     self.goal(QuickChatCause.ME)
 
+                    # Check for assist
                     for cur, last in zip(team_stats, self.team_previous_stats):
                         if cur.assists > last.assists:
                             self.assist(QuickChatCause.TEAM)

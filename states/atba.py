@@ -1,18 +1,18 @@
 import time
 
-from stack_fsm import State
-from mathf import *
+from IAmHuman.stack_fsm import State
+from IAmHuman.mathf import *
 
 from rlbot.agents.base_agent import SimpleControllerState
 
 
-class ATBAState(State):
+class ATBA(State):
     def activate(self, agent):
         pass
 
     def execute(self, agent):
         target_location = agent.ball
-        target_speed = velocity_2d(agent.ball.velocity) + (distance_2d(agent.ball.location, agent.me.location) / 1.5)
+        target_speed = velocity2d(agent.ball.velocity) + (distance2d(agent.ball.location, agent.me.location) / 1.5)
 
         return self.atba_controller(target_location, target_speed, agent)
 
@@ -21,7 +21,7 @@ class ATBAState(State):
         controller_state = SimpleControllerState()
         angle_to_ball = math.atan2(location.data[1], location.data[0])
 
-        current_speed = velocity_2d(agent.me.velocity)
+        current_speed = velocity2d(agent.me.velocity)
         # steering
         if angle_to_ball > 0.1:
             controller_state.steer = controller_state.yaw = 1
@@ -40,7 +40,7 @@ class ATBAState(State):
 
         # dodging
         time_difference = time.time() - agent.start
-        if time_difference > 2.2 and distance_2d(target_object.location, agent.me.location) > 1000 and abs(
+        if time_difference > 2.2 and distance2d(target_object.location, agent.me.location) > 1000 and abs(
                 angle_to_ball) < 1.3:
             agent.start = time.time()
         elif time_difference <= 0.1:

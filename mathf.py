@@ -37,11 +37,25 @@ def sign(x):
         return 1
 
 
-def velocity_2d(velocity_vector):
+def cap(x, low, high):
+    if x < low:
+        return low
+    elif x > high:
+        return high
+    else:
+        return x
+
+
+def angle2d(target_vector, origin_vector):
+    difference = target_vector - origin_vector
+    return math.atan2(difference.data[1], difference.data[0])
+
+
+def velocity2d(velocity_vector):
     return math.sqrt(velocity_vector.data[0] ** 2 + velocity_vector.data[1] ** 2)
 
 
-def distance_2d(target_vector, origin_vector):
+def distance2d(target_vector, origin_vector):
     difference = target_vector - origin_vector
     return math.sqrt(difference.data[0] ** 2 + difference.data[1] ** 2)
 
