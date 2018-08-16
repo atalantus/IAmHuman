@@ -36,6 +36,18 @@ class ScoreboardStats:
         self.shots = 0
         self.demolitions = 0
 
+    def clone(self):
+        ss = ScoreboardStats()
+        ss.score = self.score
+        ss.goals = self.goals
+        ss.own_goals = self.own_goals
+        ss.assists = self.assists
+        ss.saves = self.saves
+        ss.shots = self.shots
+        ss.demolitions = self.demolitions
+        return ss
+
+
 
 class Ball(GameObject):
     def __init__(self):
