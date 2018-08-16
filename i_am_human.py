@@ -31,15 +31,15 @@ class IAmHuman(BaseAgent):
     def get_output(self, game: GameTickPacket) -> SimpleControllerState:
         self.preprocess(game)
 
+        if self.brain.get_current_state() is None:
+            # Prevent bot from doing nothing
+            self.brain.push_only(ATBAShooting())
+
         if self.show_debug_info:
             self.render_cur_state()
 
         if self.use_quick_chat:
             self.quick_chat.execute(self)
-
-        if self.brain.get_current_state() is None:
-            # Prevent bot from doing nothing
-            self.brain.push_only(ATBAShooting())
 
         return self.brain.update(self)
 
@@ -70,6 +70,9 @@ class IAmHuman(BaseAgent):
         # self.renderer.draw_string_3d(
         #    [self.me.location.data[0], self.me.location.data[1], self.me.location.data[2]], 1, 1,
         #    self.brain.get_current_state().__class__.__name__, text_color)
+
+        # State GUI
+        self.brain.get_current_state().debug_render(self)
 
         self.renderer.end_rendering()
 

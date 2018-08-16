@@ -62,3 +62,7 @@ class State(ABC):
     @abstractmethod
     def terminate(self, agent):
         pass
+
+    @abstractmethod
+    def debug_render(self, agent):
+        pass

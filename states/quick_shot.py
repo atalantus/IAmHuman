@@ -9,6 +9,9 @@ from rlbot.agents.base_agent import SimpleControllerState
 
 
 class QuickShot(State):
+    def debug_render(self, agent):
+        pass
+
     def activate(self, agent):
         pass
 
@@ -29,7 +32,7 @@ class QuickShot(State):
         y = agent.ball.location.data[1] + 100 * abs(math.sin(offset)) * sign(agent.team)
         target_location = Vector3([x, y, agent.ball.location.data[2]])
 
-        location = calc_local_vector(target_location, agent.me.rotation_matrix)
+        location = calc_local_vector(target_location - agent.me.location, agent.me.rotation_matrix)
         angle_to_target = math.atan2(location.data[1], location.data[0])
         distance_to_target = distance2d(agent.me.location, target_location)
 
@@ -44,11 +47,12 @@ class QuickShot(State):
         return self.controller(agent, target_location, speed)
 
     def controller(self, agent, target_location, target_speed):
-        goal_local = calc_local_vector(Vector3([0, -sign(agent.team) * Dimensions.FIELD_LENGTH / 2, 100]),
-                                       agent.me.rotation_matrix)
+        goal_local = calc_local_vector(
+            Vector3([0, -sign(agent.team) * Dimensions.FIELD_LENGTH / 2, 100]) - agent.me.location,
+            agent.me.rotation_matrix)
         goal_angle = math.atan2(goal_local.data[1], goal_local.data[0])
 
-        location = calc_local_vector(target_location, agent.me.rotation_matrix)
+        location = calc_local_vector(target_location - agent.me.location, agent.me.rotation_matrix)
         controller_state = SimpleControllerState()
         angle_to_target = math.atan2(location.data[1], location.data[0])
 

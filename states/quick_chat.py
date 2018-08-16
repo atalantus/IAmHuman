@@ -6,6 +6,9 @@ from rlbot.utils.structures.quick_chats import QuickChats
 
 
 class QuickChat(State):
+    def debug_render(self, agent):
+        pass
+
     def __init__(self):
         self.me_previous_stats = None
         self.teammates_previous_stats = []

@@ -7,6 +7,9 @@ from rlbot.agents.base_agent import SimpleControllerState
 
 
 class ATBA(State):
+    def debug_render(self, agent):
+        pass
+
     def activate(self, agent):
         pass
 
