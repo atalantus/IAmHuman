@@ -1,4 +1,5 @@
 from enum import Enum
+
 from stack_fsm import State
 
 from rlbot.utils.structures.quick_chats import QuickChats
