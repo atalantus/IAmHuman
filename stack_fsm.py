@@ -2,6 +2,7 @@ from IAmHuman.states.atba import *
 from IAmHuman.states.atba_shooting import *
 from IAmHuman.states.calc_shot import *
 from IAmHuman.states.quick_shot import *
+from IAmHuman.states.half_flip import *
 
 
 class StackFSM:
@@ -12,7 +13,8 @@ class StackFSM:
             "ATBA": ATBA(),
             "ATBAShooting": ATBAShooting(),
             "CalcShot": CalcShot(),
-            "QuickShot": QuickShot()
+            "QuickShot": QuickShot(),
+            "HalfFlip": HalfFlip()
         }
 
     def update(self, agent):
