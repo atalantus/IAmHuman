@@ -3,10 +3,7 @@ import time
 from IAmHuman.stack_fsm import StackFSM
 from IAmHuman.game_elements import *
 from IAmHuman.mathf import *
-from IAmHuman.states.atba import ATBA
-from IAmHuman.states.quick_chat import QuickChat
-from IAmHuman.states.quick_shot import QuickShot
-from IAmHuman.states.atba_shooting import ATBAShooting
+from IAmHuman.quick_chat import QuickChat
 
 from rlbot.agents.base_agent import BaseAgent, SimpleControllerState
 from rlbot.utils.structures.game_data_struct import GameTickPacket
@@ -33,13 +30,13 @@ class IAmHuman(BaseAgent):
 
         if self.brain.get_current_state() is None:
             # Prevent bot from doing nothing
-            self.brain.push_only(ATBAShooting())
+            self.brain.push_only('QuickShot')
 
         if self.show_debug_info:
             self.render_cur_state()
 
         if self.use_quick_chat:
-            self.quick_chat.execute(self)
+            self.quick_chat.check(self)
 
         return self.brain.update(self)
 

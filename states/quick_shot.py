@@ -1,7 +1,6 @@
 import time
 
-from IAmHuman.stack_fsm import State
-from IAmHuman.mathf import *
+from IAmHuman.state import State
 from IAmHuman.util import *
 from IAmHuman.game_values import Dimensions
 
@@ -9,42 +8,35 @@ from rlbot.agents.base_agent import SimpleControllerState
 
 
 class QuickShot(State):
+    def __init__(self):
+        self.target_location = Vector3([0, 0, 0])
+
     def debug_render(self, agent):
-        pass
+        agent.renderer.draw_line_3d(agent.me.location.data, self.target_location.data,
+                                    agent.renderer.create_color(255, 0, 0, 255))
 
     def activate(self, agent):
         pass
 
     def execute(self, agent):
-        left_post = Vector3(
-            [sign(agent.team) * Dimensions.GOAL_WIDTH / 2, -sign(agent.team) * Dimensions.FIELD_LENGTH / 2, 100])
-        right_post = Vector3(
-            [-sign(agent.team) * Dimensions.GOAL_WIDTH / 2, -sign(agent.team) * Dimensions.FIELD_LENGTH / 2, 100])
-
-        ball_left = angle2d(agent.ball.location, left_post)
-        ball_right = angle2d(agent.ball.location, right_post)
-
-        our_left = angle2d(agent.me.location, left_post)
-        our_right = angle2d(agent.me.location, right_post)
-
         offset = (agent.ball.location.data[0] / Dimensions.FIELD_WIDTH) * 3.14
         x = agent.ball.location.data[0] + 100 * abs(math.cos(offset)) * sign(offset)
         y = agent.ball.location.data[1] + 100 * abs(math.sin(offset)) * sign(agent.team)
-        target_location = Vector3([x, y, agent.ball.location.data[2]])
+        self.target_location = Vector3([x, y, agent.ball.location.data[2]])
 
-        location = calc_local_vector(target_location - agent.me.location, agent.me.rotation_matrix)
+        location = calc_local_vector(self.target_location - agent.me.location, agent.me.rotation_matrix)
         angle_to_target = math.atan2(location.data[1], location.data[0])
-        distance_to_target = distance2d(agent.me.location, target_location)
+        distance_to_target = distance2d(agent.me.location, self.target_location)
 
         speed_correction = ((1 + abs(angle_to_target) ** 2) * 300)
         speed = 2000 - speed_correction + cap((distance_to_target / 16) ** 2, 0, speed_correction)
 
-        # if distance2d(agent.me.location, agent.ball.location) < 400 and abs(angle_to_target) > 2:
-        #    self.expired = True
-        # elif calcShot().available(agent) == True:
-        #    self.expired = True
+        if distance2d(agent.me.location, agent.ball.location) < 400 and abs(angle_to_target) > 2:
+            agent.brain.pop_only()
+        elif ball_ready(agent) and ball_project(agent) > 500 and abs(agent.ball.location.data[0]) < 3900:
+            agent.brain.push_only('CalcShot')
 
-        return self.controller(agent, target_location, speed)
+        return self.controller(agent, self.target_location, speed)
 
     def controller(self, agent, target_location, target_speed):
         goal_local = calc_local_vector(

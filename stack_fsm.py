@@ -1,10 +1,19 @@
-from abc import ABC, abstractmethod
+from IAmHuman.states.atba import *
+from IAmHuman.states.atba_shooting import *
+from IAmHuman.states.calc_shot import *
+from IAmHuman.states.quick_shot import *
 
 
 class StackFSM:
     def __init__(self):
         self.stack = []
         self.agent = None
+        self.states = {
+            "ATBA": ATBA(),
+            "ATBAShooting": ATBAShooting(),
+            "CalcShot": CalcShot(),
+            "QuickShot": QuickShot()
+        }
 
     def update(self, agent):
         self.agent = agent
@@ -15,7 +24,9 @@ class StackFSM:
         else:
             return None
 
-    def pop_and_push(self, new_state):
+    def pop_and_push(self, new_state_id):
+        new_state = self.states[new_state_id]
+
         self.get_current_state().terminate(self.agent)
         self.stack.pop()
 
@@ -30,9 +41,13 @@ class StackFSM:
     def pop_only(self):
         self.get_current_state().terminate(self.agent)
         self.stack.pop()
-        self.get_current_state().activate(self.agent)
+        cur_state = self.get_current_state()
+        if cur_state is not None:
+            self.get_current_state().activate(self.agent)
 
-    def push_only(self, new_state):
+    def push_only(self, new_state_id):
+        new_state = self.states[new_state_id]
+
         cur_state = self.get_current_state()
 
         if cur_state != new_state:
@@ -47,22 +62,3 @@ class StackFSM:
             return None
         else:
             return self.stack[-1]
-
-
-class State(ABC):
-
-    @abstractmethod
-    def activate(self, agent):
-        pass
-
-    @abstractmethod
-    def execute(self, agent):
-        pass
-
-    @abstractmethod
-    def terminate(self, agent):
-        pass
-
-    @abstractmethod
-    def debug_render(self, agent):
-        pass

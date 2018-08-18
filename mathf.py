@@ -46,7 +46,7 @@ def cap(x, low, high):
         return x
 
 
-def angle2d(target_vector, origin_vector):
+def angleTo(target_vector, origin_vector):
     difference = target_vector - origin_vector
     return math.atan2(difference.data[1], difference.data[0])
 

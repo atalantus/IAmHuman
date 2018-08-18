@@ -1,13 +1,9 @@
 from enum import Enum
 
-from IAmHuman.stack_fsm import State
-
 from rlbot.utils.structures.quick_chats import QuickChats
 
 
-class QuickChat(State):
-    def debug_render(self, agent):
-        pass
+class QuickChat:
 
     def __init__(self):
         self.me_previous_stats = None
@@ -16,10 +12,7 @@ class QuickChat(State):
         self.gg = False
         self.agent = None
 
-    def activate(self, agent):
-        pass
-
-    def execute(self, agent):
+    def check(self, agent):
         self.agent = agent
         team_stats = [c.stats for c in agent.teammates]
         opponents_stats = [c.stats for c in agent.opponents]
@@ -73,9 +66,6 @@ class QuickChat(State):
         self.me_previous_stats = agent.me.stats.clone()
         self.teammates_previous_stats = [s.clone() for s in team_stats]
         self.opponents_previous_stats = [s.clone() for s in opponents_stats]
-
-    def terminate(self, agent):
-        pass
 
     def goal(self, cause):
         if cause == QuickChatCause.ME:

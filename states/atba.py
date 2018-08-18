@@ -1,6 +1,6 @@
 import time
 
-from IAmHuman.stack_fsm import State
+from IAmHuman.state import State
 from IAmHuman.mathf import *
 
 from rlbot.agents.base_agent import SimpleControllerState
@@ -14,10 +14,10 @@ class ATBA(State):
         pass
 
     def execute(self, agent):
-        target_location = agent.ball
+        target_object = agent.ball
         target_speed = velocity2d(agent.ball.velocity) + (distance2d(agent.ball.location, agent.me.location) / 1.5)
 
-        return self.controller(target_location, target_speed, agent)
+        return self.controller(target_object, target_speed, agent)
 
     def controller(self, target_object, target_speed, agent):
         location = target_object.local_location

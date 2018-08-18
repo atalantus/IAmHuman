@@ -1,6 +1,6 @@
 import time
 
-from IAmHuman.stack_fsm import State
+from IAmHuman.state import State
 from IAmHuman.mathf import *
 from IAmHuman.game_values import Dimensions
 
@@ -30,11 +30,11 @@ class ATBAShooting(State):
         self.right_post = Vector3(
             [-sign(agent.team) * Dimensions.GOAL_WIDTH / 2, -sign(agent.team) * Dimensions.FIELD_LENGTH / 2, 100])
 
-        ball_left = angle2d(agent.ball.location, self.left_post)
-        ball_right = angle2d(agent.ball.location, self.right_post)
+        ball_left = angleTo(agent.ball.location, self.left_post)
+        ball_right = angleTo(agent.ball.location, self.right_post)
 
-        our_left = angle2d(agent.me.location, self.left_post)
-        our_right = angle2d(agent.me.location, self.right_post)
+        our_left = angleTo(agent.me.location, self.left_post)
+        our_right = angleTo(agent.me.location, self.right_post)
 
         target_speed = 1399
 
