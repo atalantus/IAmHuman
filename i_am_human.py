@@ -21,17 +21,18 @@ class IAmHuman(BaseAgent):
         self.ball = Ball()
         self.game_info = GameInfo()
 
-        self.start = time.time()
         self.show_debug_info = True
         self.use_quick_chat = True
         self.quick_chat = QuickChat()
+
+        self.target_position = Vector3([0, 0, 0])
 
     def get_output(self, game: GameTickPacket) -> SimpleControllerState:
         self.preprocess(game)
 
         if self.brain.get_current_state() is None:
             # Prevent bot from doing nothing
-            self.brain.push_only('QuickShot')
+            self.brain.push_only('PowerSlide')
 
         if self.show_debug_info:
             self.render_cur_state()
@@ -126,8 +127,11 @@ class IAmHuman(BaseAgent):
         car_object.stats.shots = car_data.score_info.shots
         car_object.stats.demolitions = car_data.score_info.demolitions
 
-        car_object.rotation_matrix = calc_rotation_matrix(car_object.rotation.data)
+        car_object.is_demolished = car_data.is_demolished
+        car_object.has_wheel_contact = car_data.has_wheel_contact
         car_object.boost = car_data.boost
         car_object.team = car_data.team
+
+        car_object.rotation_matrix = calc_rotation_matrix(car_object.rotation.data)
 
         return car_object

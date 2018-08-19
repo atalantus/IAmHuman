@@ -1,5 +1,3 @@
-import time
-
 from IAmHuman.state import State
 from IAmHuman.mathf import *
 
@@ -7,6 +5,9 @@ from rlbot.agents.base_agent import SimpleControllerState
 
 
 class ATBA(State):
+    def __init__(self):
+        self.start = 0
+
     def debug_render(self, agent):
         pass
 
@@ -15,6 +16,7 @@ class ATBA(State):
 
     def execute(self, agent):
         target_object = agent.ball
+        agent.target_position = target_object.location
         target_speed = velocity2d(agent.ball.velocity) + (distance2d(agent.ball.location, agent.me.location) / 1.5)
 
         return self.controller(target_object, target_speed, agent)
@@ -36,16 +38,16 @@ class ATBA(State):
         # throttle
         if target_speed > current_speed:
             controller_state.throttle = 1.0
-            if target_speed > 1400 and agent.start > 2.2 and current_speed < 2250:
+            if target_speed > 1400 and self.start > 2.2 and current_speed < 2250:
                 controller_state.boost = True
         elif target_speed < current_speed:
             controller_state.throttle = 0
 
         # dodging
-        time_difference = time.time() - agent.start
+        time_difference = agent.game_info.seconds_elapsed - self.start
         if time_difference > 2.2 and distance2d(target_object.location, agent.me.location) > 1000 and abs(
                 angle_to_ball) < 1.3:
-            agent.start = time.time()
+            self.start = agent.game_info.seconds_elapsed
         elif time_difference <= 0.1:
             controller_state.jump = True
             controller_state.pitch = -1

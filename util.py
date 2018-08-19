@@ -18,10 +18,14 @@ def ball_project(agent):
 
 
 def can_half_flip(agent, angle_to_target):
-    if abs(angle_to_target) >= 2.75:
+    if abs(angle_to_target) >= 2.75 and agent.me.has_wheel_contact:
         return True
     return False
 
+def can_power_slide(agent, angle_to_target):
+    if agent.me.has_wheel_contact:
+        return True
+    return False
 
 def steer(angle):
     final = ((10 * angle + sign(angle)) ** 3) / 20

@@ -1,5 +1,3 @@
-import time
-
 from IAmHuman.state import State
 from IAmHuman.mathf import *
 from IAmHuman.game_values import Dimensions
@@ -9,16 +7,16 @@ from rlbot.agents.base_agent import SimpleControllerState
 
 class ATBAShooting(State):
     def __init__(self):
+        self.start = 0
         self.left_post = Vector3([0, 0, 0])
         self.right_post = Vector3([0, 0, 0])
-        self.target_location = Vector3([0, 0, 0])
 
     def debug_render(self, agent):
         agent.renderer.draw_line_3d(agent.me.location.data, self.left_post.data,
                                     agent.renderer.create_color(255, 255, 0, 0))
         agent.renderer.draw_line_3d(agent.me.location.data, self.right_post.data,
                                     agent.renderer.create_color(255, 255, 0, 0))
-        agent.renderer.draw_line_3d(agent.me.location.data, self.target_location.data,
+        agent.renderer.draw_line_3d(agent.me.location.data, agent.target_position.data,
                                     agent.renderer.create_color(255, 0, 0, 255))
 
     def activate(self, agent):
@@ -39,19 +37,19 @@ class ATBAShooting(State):
         target_speed = 1399
 
         if our_left <= ball_left and our_right >= ball_right:
-            self.target_location = agent.ball.location
+            agent.target_position = agent.ball.location
         elif our_left > ball_left and our_right >= ball_right:  # ball is too far right
-            self.target_location = Vector3(
+            agent.target_position = Vector3(
                 [agent.ball.location.data[0], agent.ball.location.data[1] + sign(agent.team) * 160,
                  agent.ball.location.data[2]])
         elif our_right < ball_right and our_left <= ball_left:  # ball is too far left
-            self.target_location = Vector3(
+            agent.target_position = Vector3(
                 [agent.ball.location.data[0], agent.ball.location.data[1] + sign(agent.team) * 160,
                  agent.ball.location.data[2]])
         else:
-            self.target_location = Vector3([0, sign(agent.team) * Dimensions.FIELD_LENGTH / 2, 100])
+            agent.target_position = Vector3([0, sign(agent.team) * Dimensions.FIELD_LENGTH / 2, 100])
 
-        return self.controller(agent, self.target_location, target_speed)
+        return self.controller(agent, agent.target_position, target_speed)
 
     def controller(self, agent, target_location, target_speed):
         goal_local = calc_local_vector(
@@ -76,7 +74,7 @@ class ATBAShooting(State):
         if angle_to_target >= 1.4:
             target_speed -= 1400
         else:
-            if target_speed > 1400 and target_speed > current_speed and agent.start > 2.2 and current_speed < 2250:
+            if target_speed > 1400 and target_speed > current_speed and self.start > 2.2 and current_speed < 2250:
                 controller_state.boost = True
         if target_speed > current_speed:
             controller_state.throttle = 1.0
@@ -84,9 +82,9 @@ class ATBAShooting(State):
             controller_state.throttle = 0
 
         # dodging
-        time_difference = time.time() - agent.start
+        time_difference = agent.game_info.seconds_elapsed - self.start
         if time_difference > 2.2 and distance2d(target_location, agent.me.location) <= 270:
-            agent.start = time.time()
+            self.start = agent.game_info.seconds_elapsed
         elif time_difference <= 0.1:
             controller_state.jump = True
             controller_state.pitch = -1
