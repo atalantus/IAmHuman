@@ -31,7 +31,7 @@ class IAmHuman(BaseAgent):
 
         if self.brain.get_current_state() is None:
             # Prevent bot from doing nothing
-            self.brain.push_only('HalfFlip')
+            self.brain.push_only('QuickShot')
 
         if self.show_debug_info:
             self.render_cur_state()
@@ -86,6 +86,7 @@ class IAmHuman(BaseAgent):
 
         # set up game info object
         self.game_info.is_match_ended = game.game_info.is_match_ended
+        self.game_info.seconds_elapsed = game.game_info.seconds_elapsed
 
         # set up other car objects
         self.teammates.clear()

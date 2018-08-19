@@ -38,7 +38,9 @@ class CalcShot(State):
         speed_correction = ((1 + abs(angle_to_target) ** 2) * 300)
         speed = 2300 - speed_correction + cap((distance_to_target / 16) ** 2, 0, speed_correction)
 
-        if ball_project(agent) < 10:
+        if can_half_flip(agent, angle_to_target):
+            agent.brain.push_only("HalfFlip")
+        elif ball_project(agent) < 10:
             agent.brain.pop_only()
 
         return self.controller(agent, self.target_location, speed)

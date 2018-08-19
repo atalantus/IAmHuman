@@ -17,6 +17,12 @@ def ball_project(agent):
     return difference * goal_to_ball
 
 
+def can_half_flip(agent, angle_to_target):
+    if abs(angle_to_target) >= 2.75:
+        return True
+    return False
+
+
 def steer(angle):
     final = ((10 * angle + sign(angle)) ** 3) / 20
     return cap(final, -1, 1)

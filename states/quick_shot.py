@@ -31,10 +31,12 @@ class QuickShot(State):
         speed_correction = ((1 + abs(angle_to_target) ** 2) * 300)
         speed = 2000 - speed_correction + cap((distance_to_target / 16) ** 2, 0, speed_correction)
 
-        if distance2d(agent.me.location, agent.ball.location) < 400 and abs(angle_to_target) > 2:
-            agent.brain.pop_only()
-        elif ball_ready(agent) and ball_project(agent) > 500 and abs(agent.ball.location.data[0]) < 3900:
+        if ball_ready(agent) and ball_project(agent) > 500 and abs(agent.ball.location.data[0]) < 3900:
             agent.brain.push_only('CalcShot')
+        elif can_half_flip(agent, angle_to_target):
+            agent.brain.push_only("HalfFlip")
+        elif distance2d(agent.me.location, agent.ball.location) < 400 and abs(angle_to_target) > 2:
+            agent.brain.pop_only()
 
         return self.controller(agent, self.target_location, speed)
 

@@ -1,5 +1,3 @@
-import time
-
 from IAmHuman.state import State
 
 from rlbot.agents.base_agent import SimpleControllerState
@@ -8,6 +6,7 @@ from rlbot.agents.base_agent import SimpleControllerState
 class HalfFlip(State):
     def __init__(self):
         self.time_difference = 0
+        self.start = 0
 
     def debug_render(self, agent):
         agent.renderer.draw_rect_3d(agent.me.location.data, 150,
@@ -16,7 +15,8 @@ class HalfFlip(State):
                                       1, str(self.time_difference), agent.renderer.white())
 
     def activate(self, agent):
-        agent.start = time.time()
+        self.time_difference = 0
+        self.start = agent.game_info.seconds_elapsed
 
     def execute(self, agent):
         if self.time_difference > 1.75:
@@ -30,7 +30,7 @@ class HalfFlip(State):
         controller_state.pitch = 1
         controller_state.throttle = -1
 
-        self.time_difference = time.time() - agent.start
+        self.time_difference = agent.game_info.seconds_elapsed - self.start
 
         if self.time_difference <= 0.1:
             controller_state.jump = True
