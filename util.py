@@ -22,10 +22,12 @@ def can_half_flip(agent, angle_to_target):
         return True
     return False
 
+
 def can_power_slide(agent, angle_to_target):
-    if agent.me.has_wheel_contact:
+    if agent.me.has_wheel_contact and abs(angle_to_target) > 0.75:
         return True
     return False
+
 
 def steer(angle):
     final = ((10 * angle + sign(angle)) ** 3) / 20

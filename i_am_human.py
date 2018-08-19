@@ -1,5 +1,3 @@
-import time
-
 from IAmHuman.stack_fsm import StackFSM
 from IAmHuman.game_elements import *
 from IAmHuman.mathf import *
@@ -32,7 +30,7 @@ class IAmHuman(BaseAgent):
 
         if self.brain.get_current_state() is None:
             # Prevent bot from doing nothing
-            self.brain.push_only('PowerSlide')
+            self.brain.push_only('Still')
 
         if self.show_debug_info:
             self.render_cur_state()
@@ -62,13 +60,6 @@ class IAmHuman(BaseAgent):
                 y_offset += 20
                 self.renderer.draw_string_2d(125, y_offset, 1, 1, self.brain.stack[i].__class__.__name__,
                                              text_color2)
-
-        # 3D GUI
-        # self.renderer.draw_rect_3d([self.me.location.data[0], self.me.location.data[1], self.me.location.data[2]],
-        #                            100, 20, True, background_color)
-        # self.renderer.draw_string_3d(
-        #    [self.me.location.data[0], self.me.location.data[1], self.me.location.data[2]], 1, 1,
-        #    self.brain.get_current_state().__class__.__name__, text_color)
 
         # State GUI
         self.brain.get_current_state().debug_render(self)

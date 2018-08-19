@@ -1,3 +1,4 @@
+from IAmHuman.states.still import Still
 from IAmHuman.states.atba import *
 from IAmHuman.states.atba_shooting import *
 from IAmHuman.states.calc_shot import *
@@ -11,6 +12,7 @@ class StackFSM:
         self.stack = []
         self.agent = None
         self.states = {
+            "Still": Still(),
             "ATBA": ATBA(),
             "ATBAShooting": ATBAShooting(),
             "CalcShot": CalcShot(),

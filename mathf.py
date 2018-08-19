@@ -29,6 +29,10 @@ class Vector3:
             self.data[2] = sign(self.data[2])
         return self
 
+    def __str__(self):
+        return "(" + "{0:.2f}".format(round(self.data[0], 2)) + ", " + "{0:.2f}".format(
+            round(self.data[1], 2)) + ", " + "{0:.2f}".format(round(self.data[2], 2)) + ")"
+
 
 def sign(x):
     if x <= 0:
