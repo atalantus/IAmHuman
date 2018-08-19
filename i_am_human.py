@@ -14,6 +14,7 @@ class IAmHuman(BaseAgent):
     def initialize_agent(self):
         # This runs once before the bot starts up
         self.brain = StackFSM()
+        self.brain.agent = self
         self.me = Car()
         self.teammates = []
         self.opponents = []
@@ -83,7 +84,7 @@ class IAmHuman(BaseAgent):
         # set up ball object
         self.preprocess_game_object(game.game_ball, self.ball)
 
-        # set up game info objects
+        # set up game info object
         self.game_info.is_match_ended = game.game_info.is_match_ended
 
         # set up other car objects
