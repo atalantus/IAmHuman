@@ -30,7 +30,7 @@ class IAmHuman(BaseAgent):
 
         if self.brain.get_current_state() is None:
             # Prevent bot from doing nothing
-            self.brain.push_only('Still')
+            self.brain.push_only('QuickShot')
 
         if self.show_debug_info:
             self.render_cur_state()

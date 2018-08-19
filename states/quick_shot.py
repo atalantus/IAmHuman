@@ -31,8 +31,10 @@ class QuickShot(State):
 
         if ball_ready(agent) and ball_project(agent) > 500 and abs(agent.ball.location.data[0]) < 3900:
             agent.brain.push_only('CalcShot')
-        elif can_half_flip(agent, angle_to_target):
+        elif can_half_flip(agent, angle_to_target, distance_to_target):
             agent.brain.push_only("HalfFlip")
+        elif can_power_slide(agent, angle_to_target):
+            agent.brain.push_only("PowerSlide")
         elif distance2d(agent.me.location, agent.ball.location) < 400 and abs(angle_to_target) > 2:
             agent.brain.pop_only()
 

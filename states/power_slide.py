@@ -21,8 +21,6 @@ class PowerSlide(State):
         pass
 
     def execute(self, agent):
-        agent.target_position = Vector3([0, 0, 0])
-
         local_target = calc_local_vector(agent.target_position - agent.me.location, agent.me.rotation_matrix)
         self.angle_to_target = math.atan2(local_target.data[1], local_target.data[0])
 
@@ -30,9 +28,9 @@ class PowerSlide(State):
                 -0.3 <= self.angle_to_target <= 0.3 and -0.7 <= agent.me.angular_velocity.data[2] <= 0.7):
             agent.brain.pop_only()
 
-        return self.controller(agent, self.angle_to_target, abs(velocity2d(agent.me.velocity)))
+        return self.controller(agent, self.angle_to_target)
 
-    def controller(self, agent, angle, cur_speed):
+    def controller(self, agent, angle):
         controller_state = SimpleControllerState()
 
         steer_value = steer(angle)
@@ -46,9 +44,6 @@ class PowerSlide(State):
             controller_state.handbrake = False
             controller_state.boost = True
             controller_state.steer = sign(steer_value) * -1
-
-        print("{0:.2f}".format(round(self.angle_to_target, 2)) + " | " + "{0:.2f}".format(
-            round(agent.me.angular_velocity.data[2], 2)) + " | " + "{0:.2f}".format(round(balance_threshold, 2)))
 
         return controller_state
 

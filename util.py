@@ -17,14 +17,15 @@ def ball_project(agent):
     return difference * goal_to_ball
 
 
-def can_half_flip(agent, angle_to_target):
-    if abs(angle_to_target) >= 2.75 and agent.me.has_wheel_contact:
+# todo CHECK: car wouldn't dodge into a wall
+def can_half_flip(agent, angle_to_target, distance):
+    if abs(angle_to_target) >= 2.75 and agent.me.has_wheel_contact and distance >= 400:
         return True
     return False
 
 
 def can_power_slide(agent, angle_to_target):
-    if agent.me.has_wheel_contact and abs(angle_to_target) > 0.75:
+    if agent.me.has_wheel_contact and abs(angle_to_target) > 1.5:
         return True
     return False
 
