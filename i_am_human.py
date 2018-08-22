@@ -1,3 +1,5 @@
+import time
+
 from IAmHuman.stack_fsm import StackFSM
 from IAmHuman.game_elements import *
 from IAmHuman.mathf import *
@@ -19,6 +21,8 @@ class IAmHuman(BaseAgent):
         self.ball = Ball()
         self.game_info = GameInfo()
 
+        self.average_frame_time = 0
+        self.fps = 60
         self.show_debug_info = True
         self.use_quick_chat = True
         self.quick_chat = QuickChat()
@@ -26,6 +30,7 @@ class IAmHuman(BaseAgent):
         self.target_position = Vector3([0, 0, 0])
 
     def get_output(self, game: GameTickPacket) -> SimpleControllerState:
+        fps_start = time.time()
         self.preprocess(game)
 
         if self.brain.get_current_state() is None:
@@ -38,7 +43,15 @@ class IAmHuman(BaseAgent):
         if self.use_quick_chat:
             self.quick_chat.check(self)
 
-        return self.brain.update(self)
+        controller = self.brain.update(self)
+        self.calc_bot_fps(fps_start, time.time())
+
+        return controller
+
+    def calc_bot_fps(self, start_time, end_time):
+        smoothing = 0.9
+        self.average_frame_time = (self.average_frame_time * smoothing) + ((end_time - start_time) * (1 - smoothing))
+        self.fps = 1 / self.average_frame_time
 
     def render_cur_state(self):
         self.renderer.begin_rendering()
@@ -47,8 +60,16 @@ class IAmHuman(BaseAgent):
         background_color = self.renderer.create_color(150, 0, 0, 0)
         text_color = self.renderer.create_color(255, 255, 255, 255)
         text_color2 = self.renderer.create_color(150, 255, 255, 255)
+        green = self.renderer.create_color(255, 0, 255, 0)
 
-        # 2D GUI
+        # Bot FPS
+        self.renderer.draw_rect_2d(20, 220, 200, 25, True, background_color)
+        self.renderer.draw_string_2d(25, 225, 1, 1, self.name + " FPS:",
+                                     text_color)
+        self.renderer.draw_string_2d(150, 225, 1, 1, str(int(round(self.fps))),
+                                     green if (self.fps >= 60) else self.renderer.red())
+
+        # States Stack
         self.renderer.draw_rect_2d(20, 250, 200, 100, True, background_color)
         self.renderer.draw_string_2d(25, 255, 1, 1, 'States Stack:',
                                      text_color)
