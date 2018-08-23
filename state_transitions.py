@@ -9,6 +9,6 @@ def can_half_flip(agent, angle_to_target, distance):
 
 
 def can_power_slide(agent, angle_to_target):
-    if agent.me.has_wheel_contact and is_inside_arena(agent.me.location) and abs(angle_to_target) > 1.5:
+    if agent.me.has_wheel_contact and is_inside_arena(agent.me.location) and abs(angle_to_target) > 1:
         return True
     return False

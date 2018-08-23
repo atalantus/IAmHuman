@@ -3,7 +3,7 @@ from IAmHuman.states.atba import *
 from IAmHuman.states.calc_shot import *
 from IAmHuman.states.quick_shot import *
 from IAmHuman.states.half_flip import *
-from IAmHuman.states.power_slide import *
+from IAmHuman.states.power_slide import PowerSlide
 
 
 class StackFSM:
