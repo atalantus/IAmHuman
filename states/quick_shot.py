@@ -1,5 +1,6 @@
 from IAmHuman.state import State
 from IAmHuman.util import *
+from IAmHuman.state_transitions import *
 from IAmHuman.game_values import Dimensions
 
 from rlbot.agents.base_agent import SimpleControllerState
@@ -10,7 +11,7 @@ class QuickShot(State):
         self.start = 0
 
     def debug_render(self, agent):
-        agent.renderer.draw_line_3d(agent.me.location.data, agent.target_position.data,
+        agent.renderer.draw_line_3d(agent.me.location.data, agent.get_target_pos().data,
                                     agent.renderer.create_color(255, 0, 0, 255))
 
     def activate(self, agent):
@@ -20,11 +21,11 @@ class QuickShot(State):
         offset = (agent.ball.location.data[0] / Dimensions.FIELD_WIDTH) * 3.14
         x = agent.ball.location.data[0] + 100 * abs(math.cos(offset)) * sign(offset)
         y = agent.ball.location.data[1] + 100 * abs(math.sin(offset)) * sign(agent.team)
-        agent.target_position = Vector3([x, y, agent.ball.location.data[2]])
+        agent.target = Vector3([x, y, agent.ball.location.data[2]])
 
-        location = calc_local_vector(agent.target_position - agent.me.location, agent.me.rotation_matrix)
+        location = calc_local_vector(agent.get_target_pos() - agent.me.location, agent.me.rotation_matrix)
         angle_to_target = math.atan2(location.data[1], location.data[0])
-        distance_to_target = distance2d(agent.me.location, agent.target_position)
+        distance_to_target = distance2d(agent.me.location, agent.get_target_pos())
 
         speed_correction = ((1 + abs(angle_to_target) ** 2) * 300)
         speed = 2000 - speed_correction + cap((distance_to_target / 16) ** 2, 0, speed_correction)
@@ -38,7 +39,7 @@ class QuickShot(State):
         elif distance2d(agent.me.location, agent.ball.location) < 400 and abs(angle_to_target) > 2:
             agent.brain.pop_only()
 
-        return self.controller(agent, agent.target_position, speed)
+        return self.controller(agent, agent.get_target_pos(), speed)
 
     def controller(self, agent, target_location, target_speed):
         goal_local = calc_local_vector(

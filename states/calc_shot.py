@@ -1,5 +1,5 @@
 from IAmHuman.state import State
-from IAmHuman.util import *
+from IAmHuman.state_transitions import *
 from IAmHuman.game_values import Dimensions
 
 from rlbot.agents.base_agent import SimpleControllerState
@@ -12,7 +12,7 @@ class CalcShot(State):
     def debug_render(self, agent):
         agent.renderer.draw_line_3d(self.goal.data, agent.ball.location.data,
                                     agent.renderer.create_color(255, 255, 0, 0))
-        agent.renderer.draw_line_3d(agent.me.location.data, agent.target_position.data,
+        agent.renderer.draw_line_3d(agent.me.location.data, agent.get_target_pos().data,
                                     agent.renderer.create_color(255, 0, 0, 255))
 
     def activate(self, agent):
@@ -27,13 +27,13 @@ class CalcShot(State):
         error = cap(abs(difference.data[0]) + abs(difference.data[1]), 1, 10)
 
         target_distance = (100 + distance2d(agent.ball.location, agent.me.location) * (error ** 2)) / 1.95
-        agent.target_position = agent.ball.location + Vector3(
+        agent.target = agent.ball.location + Vector3(
             [goal_to_ball.data[0] * target_distance, goal_to_ball.data[1] * target_distance, 0])
-        agent.target_position.data[0] = cap(agent.target_position.data[0], -4120, 4120)
+        agent.get_target_pos().data[0] = cap(agent.get_target_pos().data[0], -4120, 4120)
 
-        target_local = calc_local_vector(agent.target_position - agent.me.location, agent.me.rotation_matrix)
+        target_local = calc_local_vector(agent.get_target_pos() - agent.me.location, agent.me.rotation_matrix)
         angle_to_target = math.atan2(target_local.data[1], target_local.data[0])
-        distance_to_target = distance2d(agent.me.location, agent.target_position)
+        distance_to_target = distance2d(agent.me.location, agent.get_target_pos())
         speed_correction = ((1 + abs(angle_to_target) ** 2) * 300)
         speed = 2300 - speed_correction + cap((distance_to_target / 16) ** 2, 0, speed_correction)
 
@@ -44,7 +44,7 @@ class CalcShot(State):
         elif ball_project(agent) < 10:
             agent.brain.pop_only()
 
-        return self.controller(agent, agent.target_position, speed)
+        return self.controller(agent, agent.get_target_pos(), speed)
 
     def controller(self, agent, target_location, target_speed):
         location = calc_local_vector(target_location - agent.me.location, agent.me.rotation_matrix)

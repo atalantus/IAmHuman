@@ -17,17 +17,12 @@ def ball_project(agent):
     return difference * goal_to_ball
 
 
-# todo CHECK: car wouldn't dodge into a wall
-def can_half_flip(agent, angle_to_target, distance):
-    if abs(angle_to_target) >= 2.75 and agent.me.has_wheel_contact and distance >= 400:
-        return True
-    return False
-
-
-def can_power_slide(agent, angle_to_target):
-    if agent.me.has_wheel_contact and abs(angle_to_target) > 1.5:
-        return True
-    return False
+def is_inside_arena(position):
+    # checking height is probably better/way easier than checking x and y pos
+    # Batmobile 16' standard height is 18.65
+    if position.data[2] > 20:
+        return False
+    return True
 
 
 def steer(angle):

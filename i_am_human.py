@@ -11,6 +11,14 @@ from rlbot.utils.structures.game_data_struct import GameTickPacket
 
 class IAmHuman(BaseAgent):
 
+    def get_target_pos(self):
+        if isinstance(self.target, Vector3):
+            return self.target
+        elif isinstance(self.target, GameObject):
+            return self.target.location
+        else:
+            return None
+
     def initialize_agent(self):
         # This runs once before the bot starts up
         self.brain = StackFSM()
@@ -27,7 +35,7 @@ class IAmHuman(BaseAgent):
         self.use_quick_chat = True
         self.quick_chat = QuickChat()
 
-        self.target_position = Vector3([0, 0, 0])
+        self.target = Vector3([0, 0, 0])
 
     def get_output(self, game: GameTickPacket) -> SimpleControllerState:
         fps_start = time.time()
